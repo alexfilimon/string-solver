@@ -1,7 +1,5 @@
 package StringSolver.Operator;
 
-import StringSolver.Calculatable.PriorityGettable;
-
 import java.util.function.Function;
 
 public class UnaryOperator implements PriorityGettable {
