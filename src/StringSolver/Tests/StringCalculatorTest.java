@@ -86,6 +86,34 @@ public class StringCalculatorTest {
         test(expression, variables, expected);
     }
 
+    @Test
+    public void testThatCalculateProperlyCase_6() {
+        // given
+        String expression = "x - x + x";
+        Double expected = 30.0;
+        HashMap<String, Double> variables = new HashMap<>();
+        variables.put("x", 30.0);
+
+        // then
+        test(expression, variables, expected);
+    }
+
+    @Test
+    public void testThatCalculateFailCase_1() {
+        // given bas brackets
+        String expression = "x + y + sqrt((x + y)";
+
+        testFail(expression);
+    }
+
+    @Test
+    public void testThatCalculateFailCase_2() {
+        // given: bad variable
+        String expression = "1x + y + sqrt(x + y)";
+
+        testFail(expression);
+    }
+
     private void test(String expression, HashMap<String, Double> variables, Double expected) {
         VariableManager.shared.setVariables(variables);
         StringCalculator calculator = new StringCalculator(expression);
@@ -100,5 +128,18 @@ public class StringCalculatorTest {
 
         // then
         assertEquals(calculated, expected, accuracy);
+    }
+
+    private void testFail(String expression) {
+        StringCalculator calculator = new StringCalculator(expression);
+
+        // then
+        Double calculated = null;
+        try {
+            calculated = calculator.calculate();
+            assertTrue("Expected Exception, but it was not", false);
+        } catch (Exception e) {
+            assertTrue(true);
+        }
     }
 }
