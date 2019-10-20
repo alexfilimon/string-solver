@@ -96,7 +96,7 @@ public class StringCalculator implements Calculatable<Double> {
         while(needFindNext) {
             int nextOperationIndex = expression.length();
             String nextOperation = "";
-            // Поиск следующего оператора или скобки.
+            // Поиск следующего оператора или скобки
             for (String operation : operationsSymbols) {
                 int i = expression.indexOf(operation, index);
                 if (i >= 0 && i < nextOperationIndex) {
@@ -105,20 +105,20 @@ public class StringCalculator implements Calculatable<Double> {
                 }
             }
 
-            // Оператор не найден.
+            // Оператор не найден
             if (nextOperationIndex == expression.length()) {
                 needFindNext = false;
             } else {
-                // Если оператору или скобке предшествует операнд, добавляем его в выходную строку.
+                // Если оператору или скобке предшествует операнд, добавляем его в выходную строку
                 if (index != nextOperationIndex) {
                     out.add(expression.substring(index, nextOperationIndex));
                 }
-                // Обработка операторов и скобок.
-                // Открывающая скобка.
+                // Обработка операторов и скобок
+                // Открывающая скобка
                 if (nextOperation.equals(leftBracket)) {
                     stack.push(nextOperation);
                 }
-                // Закрывающая скобка.
+                // Закрывающая скобка
                 else if (nextOperation.equals(rightBracket)) {
                     while (!stack.peek().equals(leftBracket)) {
                         out.add(stack.pop());
@@ -128,7 +128,7 @@ public class StringCalculator implements Calculatable<Double> {
                     }
                     stack.pop();
                 }
-                // Операция.
+                // Операция
                 else {
                     while (!stack.empty() && !stack.peek().equals(leftBracket) &&
                             (operations.get(nextOperation) >= operations.get(stack.peek()))) {
@@ -140,11 +140,11 @@ public class StringCalculator implements Calculatable<Double> {
             }
         }
 
-        // Добавление в выходную строку операндов после последнего операнда.
+        // Добавление в выходную строку операндов после последнего операнда
         if (index != expression.length()) {
             out.add(expression.substring(index));
         }
-        // Пробразование выходного списка к выходной строке.
+        // Пробразование выходного списка к выходной строке
         while (!stack.empty()) {
             out.add(stack.pop());
         }

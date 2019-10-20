@@ -1,7 +1,6 @@
 package StringSolver.Operator;
 
 import StringSolver.Library.Tuple;
-import StringSolver.Calculatable.PriorityGettable;
 
 import java.util.function.Function;
 
