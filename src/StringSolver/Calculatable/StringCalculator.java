@@ -10,6 +10,10 @@ import StringSolver.Managers.VariableManager;
 
 import java.util.*;
 
+/**
+ * Класс, вычисляющий значение арифметического выражения,
+ * записанного в виде строки
+ */
 public class StringCalculator implements Calculatable<Double> {
 
     private String string;
@@ -19,21 +23,21 @@ public class StringCalculator implements Calculatable<Double> {
     }
 
     public Double calculate() throws CalculatorException {
-        // get map of operators with priority
+        // получение приоритетов операций
         Map<String, Integer> operators = OperatorManager.shared.getBinaryOperatorsWithPriority();
         operators.putAll(OperatorManager.shared.getUnaryOperatorsWithPriority());
         String converted = convertToRPN(string, "(", ")", operators);
 
-        // parts of converted string
+        // разбиение подготовленной строки
         String[] parts = converted.split("\\s+");
 
         // variable for calculating
         MutableInteger i = new MutableInteger(parts.length - 1);
 
-        // build tree
+        // построение дерева выражения
         Calculatable<Double> root = getCalculatable(parts, i);
 
-        // calculate
+        // вычисление значения выраженя
         return root.calculate();
     }
 
@@ -65,8 +69,7 @@ public class StringCalculator implements Calculatable<Double> {
     private boolean isNum(String part) {
         try {
             double d = Double.parseDouble(part);
-        }
-        catch(NumberFormatException nfe) {
+        } catch (NumberFormatException nfe) {
             return false;
         }
         return true;
@@ -93,7 +96,7 @@ public class StringCalculator implements Calculatable<Double> {
 
         int index = 0;
         boolean needFindNext = true;
-        while(needFindNext) {
+        while (needFindNext) {
             int nextOperationIndex = expression.length();
             String nextOperation = "";
             // Поиск следующего оператора или скобки
@@ -156,5 +159,4 @@ public class StringCalculator implements Calculatable<Double> {
 
         return result.toString();
     }
-
 }

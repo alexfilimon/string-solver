@@ -1,27 +1,31 @@
 package StringSolver.Managers;
 
+import StringSolver.Library.Pair;
 import StringSolver.Operator.BinaryOperator;
 import StringSolver.Operator.UnaryOperator;
-import StringSolver.Library.Tuple;
-import org.codehaus.groovy.runtime.ArrayUtil;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Менеджер операторов
+ * Задает правила вычисления значения каждому оператору
+ */
 public class OperatorManager {
+
+    public static final OperatorManager shared = new OperatorManager();
     private HashMap<String, BinaryOperator> binaryOperators;
     private HashMap<String, UnaryOperator> unaryOperators;
 
     public OperatorManager() {
         binaryOperators = new HashMap();
-        binaryOperators.put("+", new BinaryOperator(3, (Tuple<Double, Double> tuple) -> tuple.x + tuple.y));
-        binaryOperators.put("-", new BinaryOperator(3, (Tuple<Double, Double> tuple) -> tuple.x - tuple.y));
-        binaryOperators.put("*", new BinaryOperator(2, (Tuple<Double, Double> tuple) -> tuple.x * tuple.y));
-        binaryOperators.put("/", new BinaryOperator(2, (Tuple<Double, Double> tuple) -> tuple.x / tuple.y));
+        binaryOperators.put("+", new BinaryOperator(3, (Pair<Double, Double> pair) -> pair.x + pair.y));
+        binaryOperators.put("-", new BinaryOperator(3, (Pair<Double, Double> pair) -> pair.x - pair.y));
+        binaryOperators.put("*", new BinaryOperator(2, (Pair<Double, Double> pair) -> pair.x * pair.y));
+        binaryOperators.put("/", new BinaryOperator(2, (Pair<Double, Double> pair) -> pair.x / pair.y));
 
         unaryOperators = new HashMap();
         unaryOperators.put("sin", new UnaryOperator(1, (param) -> Math.sin(param)));
@@ -29,8 +33,6 @@ public class OperatorManager {
         unaryOperators.put("tan", new UnaryOperator(1, (param) -> Math.tan(param)));
         unaryOperators.put("sqrt", new UnaryOperator(1, (param) -> Math.sqrt(param)));
     }
-
-    public static final OperatorManager shared = new OperatorManager();
 
     public String[] getAllOperators() {
         return Stream.concat(
@@ -61,24 +63,40 @@ public class OperatorManager {
     public Map<String, Integer> getUnaryOperatorsWithPriority() {
         return unaryOperators.entrySet()
                 .stream()
-                .collect(Collectors.toMap(
-                        e -> e.getKey(),
-                        e -> e.getValue().getPriority()
-                ));
+                .collect(
+                        Collectors.toMap(
+                                e -> e.getKey(),
+                                e -> e.getValue().getPriority()
+                        )
+                );
     }
 
+    /**
+     * Вычисляет значение бинарного оператора [operatorName]
+     * между операндами [operand1] и [operand2]
+     */
     public Double calculateBinaryOperator(String operatorName, Double operand1, Double operand2) {
-        return binaryOperators.get(operatorName).getFunction().apply(new Tuple<>(operand1, operand2));
+        return binaryOperators.get(operatorName).getFunction().apply(new Pair<>(operand1, operand2));
     }
 
+    /**
+     * Вычисляет значение унарного оператора [operatorName]
+     * для операнда [operand]
+     */
     public Double calculateUnaryOperator(String operatorName, Double operand) {
         return unaryOperators.get(operatorName).getFunction().apply(operand);
     }
 
+    /**
+     * Проверяет, является ли [operatorName] унарным операндом
+     */
     public boolean isUnaryOperator(String operatorName) {
         return unaryOperators.containsKey(operatorName);
     }
 
+    /**
+     * Проверяет, является ли [operatorName] бинарным операндом
+     */
     public boolean isBinaryOperator(String operatorName) {
         return binaryOperators.containsKey(operatorName);
     }

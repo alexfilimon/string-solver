@@ -8,11 +8,11 @@ public class Program {
         // String polizString = "a b + 32 / b +";
         String string = "2.3 + 1 * sin(c)";
         StringSolver.Calculatable.StringCalculator calculator = new StringSolver.Calculatable.StringCalculator(string);
-        System.out.println("Value: ");
+        System.out.println("Значение: ");
         try {
             System.out.println(calculator.calculate());
         } catch (Exception e) {
-            System.out.print("Unable to calculate: ");
+            System.out.print("Невозможно вычислить выражение: ");
             System.out.println(e);
         }
 

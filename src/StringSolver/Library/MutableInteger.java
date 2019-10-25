@@ -1,5 +1,10 @@
 package StringSolver.Library;
 
+/**
+ * Обертка над базовым целочисленным типом,
+ * значение которого может меняться в ходе выполнения программы
+ * TODO: отрефакторить до объекта Integer
+ */
 public class MutableInteger {
     private int value;
     public MutableInteger(int value) {
