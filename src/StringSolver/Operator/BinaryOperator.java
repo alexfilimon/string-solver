@@ -8,6 +8,7 @@ import java.util.function.Function;
  * Бинарный оператор, тип значения которого [Double]
  */
 public class BinaryOperator implements Priority {
+
     @Override
     public Integer getPriority() {
         return priority;

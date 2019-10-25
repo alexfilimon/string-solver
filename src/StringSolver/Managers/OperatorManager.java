@@ -21,17 +21,17 @@ public class OperatorManager {
     private HashMap<String, UnaryOperator> unaryOperators;
 
     public OperatorManager() {
-        binaryOperators = new HashMap();
+        binaryOperators = new HashMap<>();
         binaryOperators.put("+", new BinaryOperator(3, (Pair<Double, Double> pair) -> pair.x + pair.y));
         binaryOperators.put("-", new BinaryOperator(3, (Pair<Double, Double> pair) -> pair.x - pair.y));
         binaryOperators.put("*", new BinaryOperator(2, (Pair<Double, Double> pair) -> pair.x * pair.y));
         binaryOperators.put("/", new BinaryOperator(2, (Pair<Double, Double> pair) -> pair.x / pair.y));
 
-        unaryOperators = new HashMap();
-        unaryOperators.put("sin", new UnaryOperator(1, (param) -> Math.sin(param)));
-        unaryOperators.put("cos", new UnaryOperator(1, (param) -> Math.cos(param)));
-        unaryOperators.put("tan", new UnaryOperator(1, (param) -> Math.tan(param)));
-        unaryOperators.put("sqrt", new UnaryOperator(1, (param) -> Math.sqrt(param)));
+        unaryOperators = new HashMap<>();
+        unaryOperators.put("sin", new UnaryOperator(1, Math::sin));
+        unaryOperators.put("cos", new UnaryOperator(1, Math::cos));
+        unaryOperators.put("tan", new UnaryOperator(1, Math::tan));
+        unaryOperators.put("sqrt", new UnaryOperator(1, Math::sqrt));
     }
 
     public String[] getAllOperators() {
@@ -42,7 +42,7 @@ public class OperatorManager {
     }
 
     public String[] getBinaryOperators() {
-        Integer size = binaryOperators.size();
+        int size = binaryOperators.size();
         return binaryOperators.keySet().toArray(new String[size]);
     }
 
@@ -56,7 +56,7 @@ public class OperatorManager {
     }
 
     public String[] getUnaryOperators() {
-        Integer size = unaryOperators.size();
+        int size = unaryOperators.size();
         return unaryOperators.keySet().toArray(new String[size]);
     }
 

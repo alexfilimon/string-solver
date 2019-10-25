@@ -10,23 +10,26 @@ import StringSolver.Managers.VariableManager;
 
 import java.util.*;
 
+import static StringSolver.Constants.EMPTY_STRING;
+import static StringSolver.Constants.SPACE;
+
 /**
  * Класс, вычисляющий значение арифметического выражения,
  * записанного в виде строки
  */
 public class StringCalculator implements Calculatable<Double> {
 
-    private String string;
+    private String expression;
 
-    public StringCalculator(String string) {
-        this.string = string;
+    public StringCalculator(String expression) {
+        this.expression = expression;
     }
 
     public Double calculate() throws CalculatorException {
         // получение приоритетов операций
         Map<String, Integer> operators = OperatorManager.shared.getBinaryOperatorsWithPriority();
         operators.putAll(OperatorManager.shared.getUnaryOperatorsWithPriority());
-        String converted = convertToRPN(string, "(", ")", operators);
+        String converted = convertToRPN(expression, "(", ")", operators);
 
         // разбиение подготовленной строки
         String[] parts = converted.split("\\s+");
@@ -62,43 +65,45 @@ public class StringCalculator implements Calculatable<Double> {
             // переменная без значения
             return new OperandVariable(current);
         } else {
-            throw new CalculatorCalculateException("not recognized operator or not valid variable name: ".concat(current));
+            throw new CalculatorCalculateException("Не распознан оператор или невалидное имя переменной: ".concat(current));
         }
     }
 
     private boolean isNum(String part) {
         try {
-            double d = Double.parseDouble(part);
-        } catch (NumberFormatException nfe) {
+            Double.parseDouble(part);
+        } catch (NumberFormatException error) {
             return false;
         }
         return true;
     }
 
-    private String convertToRPN(String expression, String leftBracket, String rightBracket, Map<String, Integer> operations) throws CalculatorConvertException {
-        if (expression == null || expression.length() == 0) {
-            throw new CalculatorConvertException("Empty expression");
+    private String convertToRPN(
+            String expression,
+            String leftBracket,
+            String rightBracket,
+            Map<String, Integer> operations
+    ) throws CalculatorConvertException {
+
+        if (expression == null || expression.isBlank()) {
+            throw new CalculatorConvertException("Выражение пусто");
         }
 
-        // output list
-        List<String> out = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
+        Stack<String> operationStack = new Stack<>();
 
-        // operations stack
-        Stack<String> stack = new Stack<String>();
-
-        // symbols of all operations
-        Set<String> operationsSymbols = new HashSet<String>(Arrays.asList(OperatorManager.shared.getAllOperators()));
+        // Задание множества всех допустимых символов операции
+        Set<String> operationsSymbols = new HashSet<>(Arrays.asList(OperatorManager.shared.getAllOperators()));
         operationsSymbols.add(leftBracket);
         operationsSymbols.add(rightBracket);
 
-        // remove spaces
-        expression = expression.replace(" ", "");
+        expression = clearExpression(expression);
 
         int index = 0;
         boolean needFindNext = true;
         while (needFindNext) {
             int nextOperationIndex = expression.length();
-            String nextOperation = "";
+            String nextOperation = EMPTY_STRING;
             // Поиск следующего оператора или скобки
             for (String operation : operationsSymbols) {
                 int i = expression.indexOf(operation, index);
@@ -114,30 +119,20 @@ public class StringCalculator implements Calculatable<Double> {
             } else {
                 // Если оператору или скобке предшествует операнд, добавляем его в выходную строку
                 if (index != nextOperationIndex) {
-                    out.add(expression.substring(index, nextOperationIndex));
+                    result.add(expression.substring(index, nextOperationIndex));
                 }
                 // Обработка операторов и скобок
                 // Открывающая скобка
                 if (nextOperation.equals(leftBracket)) {
-                    stack.push(nextOperation);
+                    processLeftBracket(operationStack, nextOperation);
                 }
                 // Закрывающая скобка
                 else if (nextOperation.equals(rightBracket)) {
-                    while (!stack.peek().equals(leftBracket)) {
-                        out.add(stack.pop());
-                        if (stack.empty()) {
-                            throw new CalculatorConvertException("Unmatched brackets");
-                        }
-                    }
-                    stack.pop();
+                    processRightBracket(operationStack, result, leftBracket);
                 }
                 // Операция
                 else {
-                    while (!stack.empty() && !stack.peek().equals(leftBracket) &&
-                            (operations.get(nextOperation) >= operations.get(stack.peek()))) {
-                        out.add(stack.pop());
-                    }
-                    stack.push(nextOperation);
+                    processOperation(operationStack, result, leftBracket, operations, nextOperation);
                 }
                 index = nextOperationIndex + nextOperation.length();
             }
@@ -145,18 +140,50 @@ public class StringCalculator implements Calculatable<Double> {
 
         // Добавление в выходную строку операндов после последнего операнда
         if (index != expression.length()) {
-            out.add(expression.substring(index));
+            result.add(expression.substring(index));
         }
         // Пробразование выходного списка к выходной строке
-        while (!stack.empty()) {
-            out.add(stack.pop());
+        while (!operationStack.empty()) {
+            result.add(operationStack.pop());
         }
-        StringBuffer result = new StringBuffer();
-        if (!out.isEmpty())
-            result.append(out.remove(0));
-        while (!out.isEmpty())
-            result.append(" ").append(out.remove(0));
+        return result.stream()
+                .reduce((a, b) -> a + SPACE + b)
+                .orElse(EMPTY_STRING);
+    }
 
-        return result.toString();
+    private String clearExpression(String expression) {
+        return expression.replaceAll(SPACE, EMPTY_STRING);
+    }
+
+    private void processLeftBracket(Stack<String> operationStack, String nextOperation) {
+        operationStack.push(nextOperation);
+    }
+
+    private void processRightBracket(
+            Stack<String> operationStack,
+            List<String> result,
+            String leftBracket
+    ) throws CalculatorConvertException {
+        while (!operationStack.peek().equals(leftBracket)) {
+            result.add(operationStack.pop());
+            if (operationStack.empty()) {
+                throw new CalculatorConvertException("Несбалансированные скобки!");
+            }
+        }
+        operationStack.pop();
+    }
+
+    private void processOperation(
+            Stack<String> operationStack,
+            List<String> result,
+            String leftBracket,
+            Map<String, Integer> operations,
+            String nextOperation
+    ) {
+        while (!operationStack.empty() && !operationStack.peek().equals(leftBracket) &&
+                (operations.get(nextOperation) >= operations.get(operationStack.peek()))) {
+            result.add(operationStack.pop());
+        }
+        operationStack.push(nextOperation);
     }
 }

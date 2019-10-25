@@ -30,12 +30,7 @@ public class VariableManager {
         if (map.containsKey(name)) {
             return map.get(name);
         } else {
-            Double value = readValue(name);
-            while (value == null) {
-                value = readValue(name);
-            }
-            map.put(name, value);
-            return value;
+            return requestValue(name);
         }
     }
 
@@ -45,6 +40,15 @@ public class VariableManager {
 
     public void clearVariables() {
         map.clear();
+    }
+
+    private Double requestValue(String name) {
+        Double value = readValue(name);
+        while (value == null) {
+            value = readValue(name);
+        }
+        map.put(name, value);
+        return value;
     }
 
     private Double readValue(String name) {
