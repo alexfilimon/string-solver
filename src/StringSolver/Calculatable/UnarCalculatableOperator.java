@@ -4,6 +4,10 @@ import StringSolver.Exceptions.CalculatorException;
 import StringSolver.Library.Calculatable;
 import StringSolver.Managers.OperatorManager;
 
+/**
+ * Обертка для [UnaryOperator], которая упрощает
+ * получение значения оператора
+ */
 public class UnarCalculatableOperator implements Calculatable<Double> {
 
     private String operator;

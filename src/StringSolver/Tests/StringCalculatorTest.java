@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -16,7 +15,7 @@ public class StringCalculatorTest {
 
     @Before
     public void setupVariableManager() {
-        VariableManager.shared.cleanVariables();
+        VariableManager.shared.clearVariables();
     }
 
     @Test

@@ -31,10 +31,10 @@ public class VariableManagerTest {
 
         // when
         List<Boolean> gettedGoodVariables = goodVariablesNames.stream()
-                .map(s -> VariableManager.isVariable(s))
+                .map(VariableManager::isVariable)
                 .collect(Collectors.toList());
         List<Boolean> gettedBadVariables = badVariablesNames.stream()
-                .map(s -> VariableManager.isVariable(s))
+                .map(VariableManager::isVariable)
                 .collect(Collectors.toList());
 
         // then

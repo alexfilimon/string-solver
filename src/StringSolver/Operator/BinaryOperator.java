@@ -1,23 +1,27 @@
 package StringSolver.Operator;
 
-import StringSolver.Library.Tuple;
+import StringSolver.Library.Pair;
 
 import java.util.function.Function;
 
-public class BinaryOperator implements PriorityGettable {
+/**
+ * Бинарный оператор, тип значения которого [Double]
+ */
+public class BinaryOperator implements Priority {
+
     @Override
     public Integer getPriority() {
         return priority;
     }
 
-    public Function<Tuple<Double, Double>, Double> getFunction() {
+    public Function<Pair<Double, Double>, Double> getFunction() {
         return closure;
     }
 
     private Integer priority;
-    private Function<Tuple<Double, Double>, Double> closure;
+    private Function<Pair<Double, Double>, Double> closure;
 
-    public BinaryOperator(Integer priority, Function<Tuple<Double, Double>, Double> closure) {
+    public BinaryOperator(Integer priority, Function<Pair<Double, Double>, Double> closure) {
         this.priority = priority;
         this.closure = closure;
     }
